@@ -1,0 +1,174 @@
+package org.usfirst.frc.team7029.robot;
+
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Timer;
+
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the IterativeRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the manifest file in the resource
+ * directory.
+ */
+public class Robot extends IterativeRobot {
+	final String defaultAuto = "Default";
+	final String customAuto = "My Auto";
+	String autoSelected;
+	SendableChooser<String> chooser = new SendableChooser<>();
+
+	Spark rightdrive1 = new Spark(0);
+	Spark rightdrive2 = new Spark(1);
+	Spark leftdrive1 = new Spark(8);
+	Spark leftdrive2 = new Spark(9);
+	Spark Chute1 = new Spark(2);
+	//Spark Chute2 = new Spark(3);
+	Spark Chute3 = new Spark(4);
+	Spark Chute4 = new Spark(5);
+	Spark Chute5 = new Spark(6);
+	Spark Chute6 = new Spark(7);
+	Timer autotimer = new Timer();
+
+			
+	// Victor rightback = new Victor(0);
+	// Victor leftback = new Victor(1);
+	 Joystick rightstick = new Joystick(2);
+	 Joystick leftstick = new Joystick(0);
+	 Joystick Manipulator = new  Joystick(1);
+	/**
+	 * 61` This function is run when the robot is first started up and should be
+	 * used for any initialization code.
+	 */
+	@Override
+	public void robotInit() {
+		CameraServer.getInstance().startAutomaticCapture();
+		chooser.addDefault("Default Auto", defaultAuto);
+		chooser.addObject("My Auto", customAuto);
+		SmartDashboard.putData("Auto choices", chooser);
+		leftdrive1.setInverted(true);
+		leftdrive2.setInverted(true);
+		rightdrive1.setInverted(false);
+		rightdrive2.setInverted(false);
+		Chute1.setInverted(false);
+		//Chute2.setInverted(true);
+		Chute3.setInverted(true);
+		Chute4.setInverted(false);
+		Chute5.setInverted(false);
+		Chute6.setInverted(true);
+	}
+
+	/**
+	 * This autonomous (along with the chooser code above) shows how to select
+	 * between different autonomous modes using the dashboard. The sendable chooser
+	 * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
+	 * remove all of the chooser code and uncomment the getString line to get the
+	 * auto name from the text box below the Gyro
+	 *
+	 * You can add additional auto modes by adding additional comparisons to the
+	 * switch structure below with additional strings. If using the SendableChooser
+	 * make sure to add them to the chooser code above as well.
+	 */
+	@Override
+	public void autonomousInit() {
+		
+		autoSelected = chooser.getSelected();
+		autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
+		System.out.println("Auto selected: " + autoSelected);
+		autotimer.start();
+	}
+
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	@Override
+	public void autonomousPeriodic() {
+		
+		switch (autoSelected) {
+		case customAuto:
+			if (autotimer.get()>1.3) {	
+				rightdrive1.set(1);
+				rightdrive2.set(1);
+				leftdrive1.set(1);
+				leftdrive2.set(1);
+				
+			}else{
+				rightdrive1.set(0);
+				rightdrive2.set(0);
+				leftdrive1.set(0);
+				leftdrive2.set(0);
+				
+			}
+			
+			// Put custom auto code here
+			break;
+		case defaultAuto:
+		default:
+			// Put default auto code here
+			break;
+		}
+	}
+
+	/**
+	 * This function is called periodically during operator control
+	 */
+	@Override
+	public void teleopPeriodic() {
+
+		double rightSpeed = rightstick.getY();
+		rightdrive1.set(rightSpeed);
+		rightdrive2.set(rightSpeed);
+
+		double leftSpeed = leftstick.getY();
+		leftdrive1.set(leftSpeed);
+		leftdrive2.set(leftSpeed);
+		
+		double chuteSpeed = Manipulator.getY();
+		Chute1.set(chuteSpeed);
+	//	Chute2.set(chuteSpeed);
+		Chute3.set(chuteSpeed);
+		Chute4.set(chuteSpeed);
+		Chute5.set(chuteSpeed);
+		Chute6.set(chuteSpeed);
+		
+		
+		
+		/*
+		 * 
+		 * double yReading = rightstick.getY(); //read what the y value of the sole
+		 * joystick is. double twist = rightstick.getTwist();
+		 * 
+		 * if (twist >0.1) if (twist <-0.1){ twist = 0; // create a stable dead zone
+		 * around 0. can be tuned.
+		 * 
+		 * 
+		 * 
+		 * }
+		 * 
+		 * double leftSpeed = yReading - twist; double rightSpeed = yReading + twist;
+		 * 
+		 * //note: I'd probably *never* use this one line "if" format in real code but
+		 * it's faster to show here if (rightSpeed > 1.0) { rightSpeed = 1.0;} if
+		 * (rightSpeed < -1.0) {rightSpeed = -1.0;} if (leftSpeed > 1.0) {leftSpeed =
+		 * 1.0;} if (leftSpeed < -1.0) {leftSpeed = -1.0;}
+		 * 
+		 * //now the wheels go at different speeds.
+		 * 
+		 * rightback.set(rightSpeed); // set the speed of the right victor/wheel
+		 * leftback.set(leftSpeed); // set the speed of the left victor wheel
+		 * 
+		 */
+	}
+
+	/**
+	 * This function is called periodically during test mode
+	 */
+	// @Override
+	// public void testPeriodic() {
+	// }
+}
